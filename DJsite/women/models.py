@@ -10,4 +10,6 @@ class Women(models.Model):
     is_published = models.BooleanField(default=True)
 
 
+    def __str__(self): # returns data of instances for users
+        return self.title
 
