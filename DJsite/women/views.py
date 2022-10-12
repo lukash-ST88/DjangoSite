@@ -1,25 +1,51 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse, HttpResponseNotFound, Http404
 from .models import *
-menu = ['О сайте', 'Добавить статью', 'Обратная связь', 'Войти']
+menu = [{'title': 'О сайте', 'url_name': 'about'},
+        {'title': 'Добавить статью', 'url_name': 'add_page'},
+        {'title': 'Обратная связь', 'url_name': 'contact'},
+        {'title': 'Войти', 'url_name': 'login'}]
 
 
 def index(request): # reference to http//request
     posts = Women.objects.all()
-    return render(request, 'women/index.html', {'menu': menu, 'title':'Главная страница', 'posts': posts} )
+    cats = Category.objects.all()
+
+    context = {'posts': posts,
+               'cats': cats,
+               'menu': menu,
+               'title': "Главная страница",
+               'cat_selected': 0
+               }
+    return render(request, 'women/index.html', context=context)
 
 def about(request): # reference to http//request
     return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
 
-def categories (request, catid):
-    if request.GET:
-        print(request.GET)
-    return HttpResponse(f"<h1> Article by categories </h1><p>{catid}</p>")
+def addpage(request):
+    return HttpResponse('Добавление статьи')
 
-def archive(request, year):
-    if int(year) > 2020:
-        return redirect('home', permanent=True) # Shold allways use '/' implicit address
-    return HttpResponse(f"<h1> Archive by years</h1><p>{year}</p>")
+def contact(request):
+    return HttpResponse("Обратная связь")
+
+def login(request):
+    return HttpResponse("Авторизация")
+
+def show_post(request, post_id):
+    return HttpResponse(f'Отображение статьи с id = {post_id}')
 
 def pageNotFound(request, excpetion):
     return HttpResponseNotFound('<h1> The page is not found</h>')
+
+def show_category(request, cat_id):
+    posts = Women.objects.filter(cat_id=cat_id)
+    cats = Category.objects.all()
+    if len(posts) == 0:
+        raise Http404()
+    context = {'posts': posts,
+               'cats': cats,
+               'menu': menu,
+               'title': "Отоброжение по рубрикам",
+               'cat_selected': cat_id
+               }
+    return render(request, 'women/index.html', context=context)

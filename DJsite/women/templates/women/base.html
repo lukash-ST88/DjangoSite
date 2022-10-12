@@ -1,12 +1,12 @@
-{% load static %}
+{% load static %} <!--# loading static functions in html-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>{{title}}</title>
-    <link type="text/css" href="{% static 'women/css/style.css' %}" rel='stylesheet' />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <link rel="shortcut icon" href="{% static 'women/images/main.ico' %}" type="image/x-icaon"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link type="text/css" href="{% static 'women/css/style.css' %}" rel='stylesheet' /> <!--set styles from css-->
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"><!--set internet type MIME and html-->
+    <link rel="shortcut icon" href="{% static 'women/images/main.ico' %}" type="image/x-icaon"/><!--set an icon-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"><!--set width and scale of page for any device-->
 </head>
 <body>
 <table class="table-page" border=0 cellpadding="0" cellspacing="0">
@@ -14,12 +14,12 @@
 {% block mainmenu %}
     <div class="header">
         <ul id="mainmenu" class="mainmenu">
-            <li class="logo"><a href="#"><div class="logo"></div></a></li>
+            <li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>
             {% for m in menu %}
                 {% if not forloop.last %}
-            <li><a href="#">{{m.title}}</a></li>
+            <li><a href="{% url m.url_name %}">{{m.title}}</a></li>
                 {% else %}
-            <li class="last"><a href="#">{{m.title}}</a></li>
+            <li class="last"><a href="{% url m.url_name %}">{{m.title}}</a></li>
                 {% endif %}
             {% endfor %}
         </ul>
@@ -29,13 +29,20 @@
     <table class="table-content" border=0 cellspacing="0" cellpadding="0">
         <tr>
 <!--Sidebar слева -->
-        <td valign="top" class="left-chpters">
+        <td valign="top" class="left-chapters">
         <ul id="leftchapters">
-            <li class="selected">
-            <li><a href="selected">Все категории</li>
-            <li><a href="#">Актрисы</a></li>
-            <li><a href="#">Певицы</a></li>
-            <li><a href="#">Спортсменки</a></li>
+            {% if cat_selected == 0 %}
+            <li class="selected">Все категории</li>
+            {% else %}
+            <li><a href="{% url 'home' %}">Все категории</a></li>
+            {% endif %}
+            {% for c in cats %}
+            {% if c.pk == cat_selected %}
+            <li class="selected">{{c.name}}</li>
+            {% else %}
+            <li><a href="{{c.get_absolute_url}}">{{c.name}}</a></li>
+            {% endif %}
+            {% endfor %}
             <li class="share"><p>Наш канал</p>
             <a class="share-yt" href="https://www.youtube.com/channel/UClJzWfGWuGJL2t-3dYKcHTA/playlists" target="_blank" rel="nofollow"></a>
             </li>

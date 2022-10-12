@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 # Create your models here.
 class Women(models.Model):
@@ -8,8 +9,20 @@ class Women(models.Model):
     time_create = models.DateTimeField (auto_now_add=True) # constant date
     time_update = models.DateTimeField(auto_now=True) # changing date
     is_published = models.BooleanField(default=True)
+    cat = models.ForeignKey('Category',on_delete=models.PROTECT, null=True)
 
 
     def __str__(self): # returns data of instances for users
         return self.title
 
+    def get_absolute_url(self): # returns optimized subcataloge <int:post_id> according to tamplate 'post' in urls
+        return reverse('post', kwargs = {'post_id': self.pk})
+
+class Category(models.Model):
+    name = models.CharField(max_length=100, db_index=True)
+
+    def __str__(self):
+        return self.name
+
+    def get_absolute_url(self): # returns optimized subcataloge <int:post_id> according to tamplate 'post' in urls
+        return reverse('category', kwargs = {'cat_id': self.pk})
