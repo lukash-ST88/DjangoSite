@@ -1,0 +1,16 @@
+{% extends 'women/base.html' %}
+
+{% block content %}
+<h1>{{title}}</h1>
+<form action="{% url 'add_page' %}" method="post" enctype="multipart/form-data"> <!--enctype for sending some files, photos with data-->
+    {% csrf_token %}<!--form protection from CSRF attacks(a necessarily field)-->
+    <!--{{ form.as_p }} - will render them wrapped in <p> tags.-->
+    <div class="form-error">{{form.non_field_errors}}</div>
+    <!--.id_for_label, non_filed_errors and errors are embedded in django collections-->
+    {% for f in form %}
+    <p><label class="form-label" for="{{f.id_for_label}}">{{f.label}}: </label>{{f}}</p>
+    <div class="form-error">{{f.errors}}</div>
+    {% endfor %}
+    <button type="submit">Добавить</button>
+</form>
+{% endblock %}

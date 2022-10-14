@@ -38,7 +38,7 @@
             {% else %}
             <li><a href="{% url 'home' %}">Все категории</a></li>
             {% endif %}
-            {% show_categories '-name' cat_selected %}
+            {% show_categories '-name' cat_selected=cat_selected %}
             <li class="share"><p>Наш канал</p>
             <a class="share-yt" href="https://www.youtube.com/channel/UClJzWfGWuGJL2t-3dYKcHTA/playlists" target="_blank" rel="nofollow"></a>
             </li>
