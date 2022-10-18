@@ -1,6 +1,8 @@
 from django import forms
 from .models import *
 from django.core.exceptions import ValidationError
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs): # An instance is created when The form of page is displayed
@@ -26,3 +28,12 @@ class AddPostForm(forms.ModelForm):
     is_published = forms.BooleanField(label="Публикация", required=False, initial=True) # checkbox (required=False(optional field))
     cat = forms.ModelChoiceField(queryset=Category.objects.all(), label="Категория", empty_label="Категория не выбрана") # drop-down list
     '''
+class RegisterUserForm(UserCreationForm): # UserCreationForm is an embedded django form
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'})) # overriding
+    password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class':'form-input'}))# overriding
+    password2 = forms.CharField(label='Повтор пароля', widget=forms.PasswordInput(attrs={'class': 'form-input'}))# overriding
+    email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={'class': 'form-input'}))# overriding
+    class Meta:
+        model = User #Embedded model 'auth_user'
+        fields = ('username', 'email', 'password1', 'password2')
+       # widgets are design of fields

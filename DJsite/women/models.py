@@ -10,7 +10,7 @@ class Women(models.Model):
     time_create = models.DateTimeField (auto_now_add=True, verbose_name="Время создания") # constant date
     time_update = models.DateTimeField(auto_now=True, verbose_name="Время изменения") # changing date
     is_published = models.BooleanField(default=True, verbose_name="Публикация")
-    cat = models.ForeignKey('Category',on_delete=models.PROTECT, verbose_name="Категория", related_name='get_posts')
+    cat = models.ForeignKey('Category',on_delete=models.PROTECT, verbose_name="Категория")
     #Null=True - necessary during the creation of new migration. Ralated_name is a method to call selected posts (Used in ORM instead of women_set)
 
 

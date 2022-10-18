@@ -4,11 +4,10 @@ from .models import *
 from .forms import *
 from django.views.generic import ListView, DetailView, CreateView
 from  django.urls import reverse_lazy
-
-menu = [{'title': 'О сайте', 'url_name': 'about'},
-        {'title': 'Добавить статью', 'url_name': 'add_page'},
-        {'title': 'Обратная связь', 'url_name': 'contact'},
-        {'title': 'Войти', 'url_name': 'login'}]
+from .utils import *
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 
 
 #def index(request): # reference to http//request
@@ -19,22 +18,22 @@ menu = [{'title': 'О сайте', 'url_name': 'about'},
      #          }
     #return render(request, 'women/index.html', context=context)
 
-class WomenHome(ListView):
+class WomenHome(DataMixin, ListView):
     model = Women # takes all entries from the table and displays it as a list
     template_name = 'women/index.html' # reference to tamplate
     context_object_name = 'posts' # creation of list of data
-    extra_context = {'title': 'Главная страница'} # static context
+    #extra_context = {'title': 'Главная страница'} # static context
 
     def get_context_data(self, *, object_list=None, **kwargs): # dynamic context
         context = super().get_context_data(**kwargs) # to get whole shaped context from ListView
-        context['menu'] = menu # add new context
-        context['cat_selected'] = 0
+        c_def = self.get_user_context(title = 'Главная страница') # call of basic class method
+        context = dict(list(context.items()) + list(c_def.items()))
         return context
 
     def get_queryset(self): # only published entries are Displayed
         return Women.objects.filter(is_published=True)
 
-class WomenCategory(ListView):
+class WomenCategory(DataMixin, ListView):
     model = Women
     template_name = 'women/index.html'
     context_object_name = 'posts'
@@ -45,10 +44,9 @@ class WomenCategory(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Категории - ' + str(context['posts'][0].cat) # cat reterns the category name
-        context['menu'] = menu
-        context['cat_selected'] = context['posts'][0].cat_id
-        return context
+        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
+                                      cat_selected=context['posts'][0].cat_id)
+        return dict(list(context.items()) + list(c_def.items()))
 
 # def show_category(request, cat_id):
 #     posts = Women.objects.filter(cat_id=cat_id)
@@ -61,19 +59,25 @@ class WomenCategory(ListView):
 #                }
 #     return render(request, 'women/index.html', context=context)
 
+@login_required # for authtorized users
 def about(request): # reference to http//request
-    return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте'})
+    contact_list = Women.objects.all()
+    paginator = Paginator(contact_list, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number) # list of objects for current page
+    return render(request, 'women/about.html', {'menu': menu, 'title': 'О сайте', 'page_obj': page_obj})
 
-class AddPage(CreateView): # This class works with forms
+class AddPage(LoginRequiredMixin, DataMixin, CreateView): # This class works with forms
     form_class = AddPostForm
     template_name = 'women/addpage.html'
     success_url = reverse_lazy('home') #Redicrect to a special page after adding a new arcticle
+    login_url = reverse_lazy('home') #a path for an unauthorized user
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = 'Добавление страницы'
-        context['menu'] = menu
-        return context
+        c_def=self.get_user_context(title='Добавление статьи')
+        return dict(list(c_def.items()) + list(context.items()))
+
 
 # def addpage(request):
 #     if request.method == 'POST': # if data are filled, we take them from POST
@@ -100,7 +104,18 @@ def contact(request):
 def login(request):
     return HttpResponse("Авторизация")
 
-class ShowPost(DetailView):
+class RegisterUser(DataMixin, CreateView):
+    form_class = RegisterUserForm
+    template_name = 'women/register.html'
+    success_name = 'women/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Регистрация')
+        return dict(list(context.items()) + list(c_def.items()))
+
+class ShowPost(DataMixin, DetailView):
     model = Women
     template_name = 'women/post.html'
     slug_url_kwarg = 'post_slug' #key for url
@@ -109,9 +124,8 @@ class ShowPost(DetailView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['title'] = context['post']
-        context['menu'] = menu
-        return context
+        c_def = self.get_user_context(title=context['post'])
+        return dict(list(c_def.items()) + list(context.items()))
 
 # def show_post(request, post_slug):
 #     post = get_object_or_404(Women, slug=post_slug) #check if there are any woman in dictionary
