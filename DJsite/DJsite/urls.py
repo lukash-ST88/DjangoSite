@@ -23,6 +23,7 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('captcha/', include('captcha.urls')),
     path('', include('women.urls')), #  path('women/', index),  path('cats/', categories)
     # #http://127.0.0.1:8000/women/
 ]

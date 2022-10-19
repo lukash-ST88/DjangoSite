@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha', #adds new app
     'debug_toolbar', # adds new app
     'women.apps.WomenConfig' #adds new app
 ]
@@ -57,7 +58,7 @@ ROOT_URLCONF = 'DJsite.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'DJsite/templates')], # redirect base_site template
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
