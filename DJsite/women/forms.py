@@ -3,6 +3,7 @@ from .models import *
 from django.core.exceptions import ValidationError
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import AuthenticationForm
 
 class AddPostForm(forms.ModelForm):
     def __init__(self, *args, **kwargs): # An instance is created when The form of page is displayed
@@ -33,7 +34,13 @@ class RegisterUserForm(UserCreationForm): # UserCreationForm is an embedded djan
     password1 = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class':'form-input'}))# overriding
     password2 = forms.CharField(label='Повтор пароля', widget=forms.PasswordInput(attrs={'class': 'form-input'}))# overriding
     email = forms.EmailField(label="Email", widget=forms.EmailInput(attrs={'class': 'form-input'}))# overriding
+
     class Meta:
         model = User #Embedded model 'auth_user'
         fields = ('username', 'email', 'password1', 'password2')
        # widgets are design of fields
+
+class LoginUserForm(AuthenticationForm):
+    username = forms.CharField(label='Логин', widget=forms.TextInput(attrs={'class': 'form-input'})) # widgets show how to display a current field on the site
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form-input'}))
+

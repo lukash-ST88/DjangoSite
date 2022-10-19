@@ -8,6 +8,9 @@ from .utils import *
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
+from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout, login
+
 
 
 #def index(request): # reference to http//request
@@ -30,8 +33,8 @@ class WomenHome(DataMixin, ListView):
         context = dict(list(context.items()) + list(c_def.items()))
         return context
 
-    def get_queryset(self): # only published entries are Displayed
-        return Women.objects.filter(is_published=True)
+    def get_queryset(self): # only published entries are Displayed (defines the sample of returned data)
+        return Women.objects.filter(is_published=True).select_related('cat') # Greedy Request that returns besides published data data from category table
 
 class WomenCategory(DataMixin, ListView):
     model = Women
@@ -39,13 +42,14 @@ class WomenCategory(DataMixin, ListView):
     context_object_name = 'posts'
     allow_empty = False #for 404 the page is not found
 
-    def get_queryset(self):
-        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True)
+    def get_queryset(self): # our query
+        return Women.objects.filter(cat__slug=self.kwargs['cat_slug'], is_published=True).select_related('cat')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
-        c_def = self.get_user_context(title='Категория - ' + str(context['posts'][0].cat),
-                                      cat_selected=context['posts'][0].cat_id)
+        c = Category.objects.get(slug=self.kwargs['cat_slug'])
+        c_def = self.get_user_context(title='Категория - ' + str(c.name),
+                                      cat_selected=c.pk)
         return dict(list(context.items()) + list(c_def.items()))
 
 # def show_category(request, cat_id):
@@ -101,8 +105,8 @@ class AddPage(LoginRequiredMixin, DataMixin, CreateView): # This class works wit
 def contact(request):
     return HttpResponse("Обратная связь")
 
-def login(request):
-    return HttpResponse("Авторизация")
+# def login(request):
+#     return HttpResponse("Авторизация")
 
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
@@ -115,6 +119,25 @@ class RegisterUser(DataMixin, CreateView):
         c_def = self.get_user_context(title='Регистрация')
         return dict(list(context.items()) + list(c_def.items()))
 
+    def form_valid(self, form): # If registration form is ok, then this method starts working
+        user = form.save() # add user in db by self
+        login(self.request, user) # Autenticate user
+        return redirect('home')
+
+class LoginUser(DataMixin, LoginView):
+    form_class = LoginUserForm
+    template_name = 'women/login.html'
+
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        c_def = self.get_user_context(title='Авторизация')
+        return dict(list(context.items()) + list(c_def.items()))
+
+    def get_success_url(self): # if login and password are correct this function works
+        return reverse_lazy('home') # redirect to home
+
+
 class ShowPost(DataMixin, DetailView):
     model = Women
     template_name = 'women/post.html'
@@ -126,6 +149,10 @@ class ShowPost(DataMixin, DetailView):
         context = super().get_context_data(**kwargs)
         c_def = self.get_user_context(title=context['post'])
         return dict(list(c_def.items()) + list(context.items()))
+
+def logout_user(request):
+    logout(request)
+    return redirect('login')
 
 # def show_post(request, post_slug):
 #     post = get_object_or_404(Women, slug=post_slug) #check if there are any woman in dictionary

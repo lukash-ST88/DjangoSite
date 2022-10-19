@@ -26,7 +26,12 @@ urlpatterns = [
     path('', include('women.urls')), #  path('women/', index),  path('cats/', categories)
     # #http://127.0.0.1:8000/women/
 ]
+
 if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [
+        path('__debug__/', include('debug_toolbar.urls')),
+    ] + urlpatterns # add URL of debug
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = pageNotFound
