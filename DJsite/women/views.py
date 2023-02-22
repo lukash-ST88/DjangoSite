@@ -13,13 +13,13 @@ from django.contrib.auth import logout, login
 
 
 
-#def index(request): # reference to http//request
- #   posts = Women.objects.all()
-  #  context = {'menu': menu,
-   #            'title': "Главная страница",
-    #           'cat_selected': 0
-     #          }
-    #return render(request, 'women/index.html', context=context)
+# def index(request): # reference to http//request
+#    posts = Women.objects.all()
+#    context = {'menu': menu,
+#               'title': "Главная страница",
+#               'cat_selected': 0
+#               }
+#     return render(request, 'women/index.html', context=context)
 
 class WomenHome(DataMixin, ListView):
     model = Women # takes all entries from the table and displays it as a list
@@ -125,7 +125,7 @@ class ContactFormView(DataMixin, FormView):
 class RegisterUser(DataMixin, CreateView):
     form_class = RegisterUserForm
     template_name = 'women/register.html'
-    success_name = 'women/register.html'
+    success_name = 'women/register.html' #
     success_url = reverse_lazy('login')
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -178,6 +178,8 @@ def logout_user(request):
 #                }
 #     return render(request, 'women/post.html', context=context)
 
-def pageNotFound(request, excpetion):
+def pageNotFound(request, excpetion): # if somewhere Http404 raises it referes here
     return HttpResponseNotFound('<h1> The page is not found</h>')
+
+
 

@@ -1,6 +1,6 @@
 from django.urls import path, re_path
 from .views import *
-from django.views.decorators.cache import cache_page # cache_page is a decorator
+#from django.views.decorators.cache import cache_page # cache_page is a decorator
 
 # adding cache this way: path('', cache_page(60)(WomenHome.as_view()), name='home') cahce for 60 seconds
 urlpatterns = [
@@ -14,3 +14,4 @@ urlpatterns = [
     path('post/<slug:post_slug>/', ShowPost.as_view(), name='post'),
     path('category/<slug:cat_slug>/', WomenCategory.as_view(), name='category'),
 ]
+

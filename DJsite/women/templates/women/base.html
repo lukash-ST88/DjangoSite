@@ -22,6 +22,7 @@
                 {% endif %}-->
             <li><a href="{% url m.url_name %}">{{m.title}}</a></li>
             {% endfor %}
+
             {% if request.user.is_authenticated %}
             <li class="last">{{user.username}}|<a href="{% url 'logout' %}">Выйти</a></li>
             {% else %}
@@ -34,7 +35,7 @@
     <table class="table-content" border=0 cellspacing="0" cellpadding="0">
         <tr>
 <!--Sidebar слева -->
-            {% load cache %}
+            <!--{% load cache %}-->
         <td valign="top" class="left-chapters">
          <!--{% getcats %} simple tag-->
         <ul id="leftchapters">

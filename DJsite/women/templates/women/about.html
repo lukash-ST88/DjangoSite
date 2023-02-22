@@ -5,10 +5,10 @@
 {% for contact in page_obj %}
 <h4>{{contact}}</h4>
 {% endfor %}
-<nav>
+<nav class="list-pages">
     <ul>
         {% for p in page_obj.paginator.page_range %}
-        <li>
+        <li class="page-num">
             <a href="?page={{p}}">{{p}}</a>
         </li>
         {% endfor %}

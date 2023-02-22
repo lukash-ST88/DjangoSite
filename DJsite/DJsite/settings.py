@@ -139,9 +139,9 @@ INTERNAL_IPS = [
 
 #LOGIN_REDIRECT_URL = '/' - instead of get_success_url function
 
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(BASE_DIR, 'DJsite_cache') # BASE_DIR stores a root directory of the project
-    }
-}
+# CACHES = {
+#     'default': {
+#         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+#         'LOCATION': os.path.join(BASE_DIR, 'DJsite_cache') # BASE_DIR stores a root directory of the project
+#     }
+# }

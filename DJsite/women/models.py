@@ -29,9 +29,10 @@ class Women(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length=100, db_index=True, verbose_name = "Категория")
     slug = models.SlugField(max_length=255, unique=True, db_index=True, verbose_name="URL")
+    
     def __str__(self):
         return self.name
-
+    
     def get_absolute_url(self): # returns optimized subcataloge <int:post_id> according to tamplate 'post' in urls
         return reverse('category', kwargs = {'cat_slug': self.slug})
 

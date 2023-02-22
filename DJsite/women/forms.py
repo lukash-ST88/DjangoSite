@@ -15,7 +15,7 @@ class AddPostForm(forms.ModelForm):
         model = Women
         fields =['title', 'slug', 'content', 'photo', 'is_published', 'cat'] # which fields must be displayed in form(__all__ means all fields except autofilled)
         widgets = {
-            'title': forms.TextInput(attrs={'class': 'form-input'}), #chenge html form for title
+            'title': forms.TextInput(attrs={'class': 'form-control'}), #chenge html form for title
             'content': forms.Textarea(attrs={'cols': 60, 'rows': 10}) # cols raw are html attributes
         }
     def clean_title(self): # validate-method must start with "clean_"
